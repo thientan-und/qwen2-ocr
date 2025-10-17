@@ -1,0 +1,24 @@
+{
+  "presets": {
+    "default": {
+      "name": "Standard OCR",
+      "description": "Basic OCR with structure preservation",
+      "prompt": "OCR this image and extract all text accurately. Maintain the original structure and formatting."
+    },
+    "thai-expert": {
+      "name": "Thai Document Expert",
+      "description": "Professional Thai OCR with 10+ years expertise",
+      "prompt": "คุณคือผู้เชี่ยวชาญด้านการอ่านเอกสารภาษาไทยที่มีประสบการณ์มากกว่า 10 ปี\n\nกรุณาทำ OCR เอกสารนี้โดย:\n1. อ่านและแยกข้อความภาษาไทยทั้งหมดอย่างแม่นยำ รักษาวรรณยุกต์และสระทุกตัวไว้\n2. รักษาโครงสร้างเดิมของเอกสาร (หัวข้อ, ย่อหน้า, รายการ)\n3. ระบุตัวเลข วันที่ และข้อมูลสำคัญให้ชัดเจน\n4. หากมีตารางหรือรายการ ให้จัดรูปแบบให้อ่านง่าย\n\nโปรดให้ผลลัพธ์ที่แม่นยำและสมบูรณ์ที่สุด"
+    },
+    "thai-accurate": {
+      "name": "Thai High Accuracy",
+      "description": "100% accuracy focus for production use",
+      "prompt": "ในฐานะผู้เชี่ยวชาญด้าน OCR ภาษาไทย กรุณาทำงานดังนี้:\n\n✓ อ่านข้อความทุกตัวอย่างละเอียด รวมถึงวรรณยุกต์และสระ\n✓ รักษาการเว้นวรรค การขึ้นบรรทัด และโครงสร้างเดิม\n✓ ตรวจสอบความถูกต้องของคำภาษาไทยและตัวเลข\n✓ หากมีเนื้อหาที่อ่านไม่ชัดเจน ให้ระบุไว้\n\nผลลัพธ์ต้องแม่นยำ 100% สามารถนำไปใช้งานได้ทันที"
+    },
+    "structured": {
+      "name": "Structured Data Extraction",
+      "description": "Organized output format for structured documents",
+      "prompt": "Extract all text from this document and organize it in a structured format:\n\n1. **Headers/Titles**: Identify all section headers\n2. **Body Text**: Extract main content with proper paragraphs\n3. **Lists/Items**: Format as bullet points or numbered lists\n4. **Data Points**: Extract dates, numbers, names clearly\n5. **Tables**: If present, structure in readable format\n\nMaintain accuracy and completeness."
+    }
+  }
+}
