@@ -1,11 +1,9 @@
-# Qwen2-VL OCR Application
+งไ# Qwen2-VL OCR Application
 
-A powerful Python CLI and Web application for performing OCR (Optical Character Recognition) using the Qwen2-VL vision-language model API. Supports single/multiple images, multi-page documents, and PDF files.
+A powerful Python CLI application for performing OCR (Optical Character Recognition) using the Qwen2-VL vision-language model API. Supports single/multiple images, multi-page documents, and PDF files.
 
 ## Features
 
-- **Web Interface** with modern UI for easy testing and visualization
-- **Command Line Interface** for automation and batch processing
 - Support for both local and remote images
 - **PDF file processing** with configurable DPI
 - **Multi-page document handling**
@@ -19,43 +17,12 @@ A powerful Python CLI and Web application for performing OCR (Optical Character 
 
 ## Installation
 
-### 1. Clone or download the repository
-
-### 2. Install dependencies:
+### 1. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Configure environment variables:
-
-Copy the example environment file:
-```bash
-cp .env.example .env
-```
-
-Then edit `.env` file with your API credentials:
-```bash
-# Qwen2-VL API Configuration
-API_URL=http://172.20.22.71/v1/chat/completions
-API_KEY=your-api-key-here
-MODEL=qwen2-vl-32b-instruct-awq
-
-# Flask Configuration
-FLASK_HOST=0.0.0.0
-FLASK_PORT=5000
-FLASK_DEBUG=True
-
-# File Upload Configuration
-MAX_FILE_SIZE_MB=16
-UPLOAD_FOLDER=uploads
-
-# PDF Processing
-DEFAULT_DPI=200
-```
-
-**Important:** The `.env` file contains sensitive information. Never commit it to version control!
-
-### 4. PDF Support (choose one):
+### 2. PDF Support (choose one):
 
 **Option A - pypdfium2 (recommended, no external dependencies):**
 ```bash
@@ -77,34 +44,9 @@ For pdf2image on Ubuntu/Debian:
 sudo apt-get install poppler-utils
 ```
 
-### 5. Make the script executable (optional):
+### 3. Make the script executable (optional):
 ```bash
 chmod +x ocr_app.py
-```
-
-## Quick Start
-
-### Web Interface (Recommended for Testing)
-
-Start the web server:
-```bash
-python app.py
-```
-
-Then open your browser and go to: **http://localhost:5000**
-
-The web interface provides:
-- Drag-and-drop file upload
-- Real-time OCR processing
-- JSON output viewer with copy function
-- Custom prompt and DPI configuration
-- Support for images and PDF files
-
-### Command Line Interface
-
-For automation and batch processing, use the CLI:
-```bash
-python ocr_app.py your_file.pdf
 ```
 
 ## Usage
@@ -281,19 +223,12 @@ python ocr_app.py scanned_document.pdf --dpi 300
 
 ## API Configuration
 
-The API configuration is managed through environment variables in the `.env` file:
+The default API configuration is:
+- **Endpoint:** http://172.20.22.71/v1/chat/completions
+- **Model:** qwen2-vl-32b-instruct-awq
+- **Auth:** Bearer token authentication
 
-- **API_URL:** API endpoint URL
-- **API_KEY:** Bearer token for authentication
-- **MODEL:** Model name to use
-- **DEFAULT_DPI:** Default DPI for PDF processing
-
-You can override these settings using command line arguments:
-```bash
-python ocr_app.py document.pdf --api-url http://custom-api/v1/chat/completions --api-key YOUR_KEY
-```
-
-Or by modifying the `.env` file directly.
+You can override these defaults using command line arguments or by modifying the script.
 
 ## Output Formats
 
@@ -305,39 +240,6 @@ Full API response with metadata, useful for programmatic processing:
 ```bash
 python ocr_app.py document.pdf --json > output.json
 ```
-
-## 🚀 Deployment
-
-### Docker / Dokploy
-
-This application is ready for production deployment with Docker.
-
-**Quick Deploy with Docker Compose:**
-```bash
-docker-compose up -d
-```
-
-**Deploy to Dokploy:**
-1. Push to Git repository
-2. Connect repository in Dokploy
-3. Set environment variables
-4. Deploy
-
-**For detailed instructions**, see [DEPLOYMENT.md](DEPLOYMENT.md) for:
-- Step-by-step Dokploy deployment
-- Docker setup
-- VPS deployment
-- Environment variables configuration
-- Troubleshooting
-
-### Environment Variables for Production
-
-Set these in your deployment platform:
-- `API_URL` - Vision API endpoint (required)
-- `API_KEY` - API authentication key (required)
-- `MODEL` - Model name (required)
-- `FLASK_PORT` - Port to run on (default: 8080)
-- `FLASK_DEBUG` - Set to `False` for production
 
 ## Troubleshooting
 
@@ -362,26 +264,7 @@ pip install pdf2image
 ### Timeout Errors
 For large PDFs or slow network:
 - Process fewer pages at once
-- Timeout is set to 5 minutes (300 seconds)
-
-## 📁 Project Structure
-
-```
-qwen25-32b-ocr/
-├── app.py                 # Flask web application
-├── ocr_app.py            # CLI tool and OCR logic
-├── templates/            # HTML templates
-│   └── index.html
-├── uploads/              # Temporary upload directory
-├── .env                  # Environment variables (not in git)
-├── .env.example          # Environment template
-├── requirements.txt      # Python dependencies
-├── Dockerfile            # Docker container definition
-├── docker-compose.yml    # Docker Compose configuration
-├── .dockerignore         # Docker ignore patterns
-├── .gitignore            # Git ignore patterns
-├── README.md             # This file
-└── DEPLOYMENT.md         # Deployment guide
+- Increase timeout in the code (line 169, 221)
 
 ## License
 
