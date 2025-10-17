@@ -342,6 +342,14 @@
                         </select>
                     </div>
 
+                    <div class="config-info">
+                        <strong>Selected Model:</strong>
+                        <div style="margin-top: 5px;">
+                            <code id="modelInfo">Loading...</code><br>
+                            <small style="color: #666;">Endpoint: <code id="endpointInfo" style="font-size: 0.85em;">Loading...</code></small>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label for="promptInput">Custom Prompt (optional)</label>
                         <textarea id="promptInput" placeholder="OCR this image and extract all text.">OCR this image and extract all text.</textarea>
@@ -361,12 +369,6 @@
                         </button>
                     </div>
                 </form>
-
-                <div class="config-info">
-                    <strong>API Configuration:</strong>
-                    Model: <code id="modelInfo">Loading...</code><br>
-                    Endpoint: <code id="endpointInfo">Loading...</code>
-                </div>
             </div>
 
             <!-- Results Section -->
