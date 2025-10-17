@@ -1,4 +1,4 @@
-งไ# Qwen2-VL OCR Application
+# Qwen2-VL OCR Application
 
 A powerful Python CLI application for performing OCR (Optical Character Recognition) using the Qwen2-VL vision-language model API. Supports single/multiple images, multi-page documents, and PDF files.
 
