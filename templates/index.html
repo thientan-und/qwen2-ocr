@@ -454,8 +454,19 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="promptInput">Custom Prompt (optional)</label>
-                        <textarea id="promptInput" placeholder="OCR this image and extract all text.">OCR this image and extract all text.</textarea>
+                        <label for="promptPreset">Prompt Preset</label>
+                        <select id="promptPreset" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1em;">
+                            <option value="default">Standard OCR</option>
+                            <option value="thai-expert">Thai Document Expert</option>
+                            <option value="thai-accurate">Thai High Accuracy</option>
+                            <option value="structured">Structured Data Extraction</option>
+                            <option value="custom">Custom Prompt</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="customPromptGroup" style="display: none;">
+                        <label for="promptInput">Custom Prompt</label>
+                        <textarea id="promptInput" placeholder="Enter your custom prompt...">คุณคือผู้เชี่ยวชาญด้านการอ่านเอกสารภาษาไทย โปรดทำ OCR และแยกข้อความทั้งหมดจากภาพนี้อย่างแม่นยำที่สุด รักษาโครงสร้างและรูปแบบเดิมไว้</textarea>
                     </div>
 
                     <div class="form-group">
@@ -500,6 +511,38 @@
         let selectedFile = null;
         let availableModels = [];
 
+        // Prompt presets for Thai OCR optimization
+        const promptPresets = {
+            'default': 'OCR this image and extract all text accurately. Maintain the original structure and formatting.',
+            'thai-expert': `คุณคือผู้เชี่ยวชาญด้านการอ่านเอกสารภาษาไทยที่มีประสบการณ์มากกว่า 10 ปี
+
+กรุณาทำ OCR เอกสารนี้โดย:
+1. อ่านและแยกข้อความภาษาไทยทั้งหมดอย่างแม่นยำ รักษาวรรณยุกต์และสระทุกตัวไว้
+2. รักษาโครงสร้างเดิมของเอกสาร (หัวข้อ, ย่อหน้า, รายการ)
+3. ระบุตัวเลข วันที่ และข้อมูลสำคัญให้ชัดเจน
+4. หากมีตารางหรือรายการ ให้จัดรูปแบบให้อ่านง่าย
+
+โปรดให้ผลลัพธ์ที่แม่นยำและสมบูรณ์ที่สุด`,
+            'thai-accurate': `ในฐานะผู้เชี่ยวชาญด้าน OCR ภาษาไทย กรุณาทำงานดังนี้:
+
+✓ อ่านข้อความทุกตัวอย่างละเอียด รวมถึงวรรณยุกต์และสระ
+✓ รักษาการเว้นวรรค การขึ้นบรรทัด และโครงสร้างเดิม
+✓ ตรวจสอบความถูกต้องของคำภาษาไทยและตัวเลข
+✓ หากมีเนื้อหาที่อ่านไม่ชัดเจน ให้ระบุไว้
+
+ผลลัพธ์ต้องแม่นยำ 100% สามารถนำไปใช้งานได้ทันที`,
+            'structured': `Extract all text from this document and organize it in a structured format:
+
+1. **Headers/Titles**: Identify all section headers
+2. **Body Text**: Extract main content with proper paragraphs
+3. **Lists/Items**: Format as bullet points or numbered lists
+4. **Data Points**: Extract dates, numbers, names clearly
+5. **Tables**: If present, structure in readable format
+
+Maintain accuracy and completeness.`,
+            'custom': ''
+        };
+
         // Load API config and models
         fetch('/api/config')
             .then(res => res.json())
@@ -534,6 +577,23 @@
 
         // Update config info when model selection changes
         document.getElementById('modelSelect').addEventListener('change', updateConfigInfo);
+
+        // Handle prompt preset changes
+        document.getElementById('promptPreset').addEventListener('change', (e) => {
+            const preset = e.target.value;
+            const customPromptGroup = document.getElementById('customPromptGroup');
+            const promptInput = document.getElementById('promptInput');
+
+            if (preset === 'custom') {
+                customPromptGroup.style.display = 'block';
+            } else {
+                customPromptGroup.style.display = 'none';
+                promptInput.value = promptPresets[preset];
+            }
+        });
+
+        // Initialize with default prompt
+        document.getElementById('promptInput').value = promptPresets['default'];
 
         function updateConfigInfo() {
             const modelSelect = document.getElementById('modelSelect');
@@ -780,7 +840,9 @@
             fileInfo.classList.remove('active');
 
             // Reset form fields
-            document.getElementById('promptInput').value = 'OCR this image and extract all text.';
+            document.getElementById('promptPreset').value = 'default';
+            document.getElementById('customPromptGroup').style.display = 'none';
+            document.getElementById('promptInput').value = promptPresets['default'];
             document.getElementById('dpiInput').value = '200';
 
             // Reset result area
