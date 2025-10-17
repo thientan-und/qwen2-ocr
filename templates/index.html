@@ -468,7 +468,6 @@
 
                 <div class="result-tabs" id="resultTabs" style="display: none;">
                     <button class="tab-btn active" data-tab="text">📝 Text</button>
-                    <button class="tab-btn" data-tab="formatted">🎨 Formatted</button>
                     <button class="tab-btn" data-tab="json">📋 JSON</button>
                 </div>
 
@@ -672,13 +671,6 @@
             window.lastResult = JSON.stringify(data, null, 2);
         }
 
-        function renderJSONView(data) {
-            const resultArea = document.getElementById('resultArea');
-            const jsonStr = JSON.stringify(data, null, 2);
-            resultArea.innerHTML = `<pre>${escapeHtml(jsonStr)}</pre>`;
-            window.lastResult = jsonStr;
-        }
-
         function extractTextContent(response) {
             if (response.error) {
                 return `Error: ${response.error}`;
@@ -726,10 +718,8 @@
                 if (resultData) {
                     if (tab === 'text') {
                         renderTextView(resultData);
-                    } else if (tab === 'formatted') {
-                        renderFormattedView(resultData);
                     } else if (tab === 'json') {
-                        renderJSONView(resultData);
+                        renderFormattedView(resultData);
                     }
                 }
             }
