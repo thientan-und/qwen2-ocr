@@ -45,6 +45,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 20px;
             margin-bottom: 20px;
+            align-items: start;
         }
 
         @media (max-width: 968px) {
@@ -58,6 +59,13 @@
             border-radius: 15px;
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .card h2 {
+            flex-shrink: 0;
         }
 
         .card h2 {
@@ -104,7 +112,13 @@
         }
 
         .form-group {
-            margin: 20px 0;
+            margin: 15px 0;
+        }
+
+        form {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .form-group label {
@@ -240,9 +254,10 @@
             background: #f8f9fa;
             border-radius: 8px;
             padding: 20px;
-            min-height: 400px;
-            max-height: 600px;
+            min-height: 500px;
+            max-height: 700px;
             overflow-y: auto;
+            flex: 1;
         }
 
         .result-area pre {
@@ -384,8 +399,8 @@
         .config-info {
             background: #fff9e6;
             border-left: 4px solid #ffc107;
-            padding: 15px;
-            margin: 20px 0;
+            padding: 12px 15px;
+            margin: 12px 0;
             border-radius: 5px;
             font-size: 0.9em;
         }
