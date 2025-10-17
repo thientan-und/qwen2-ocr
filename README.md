@@ -265,6 +265,42 @@ Full API response with metadata, useful for programmatic processing:
 python ocr_app.py document.pdf --json > output.json
 ```
 
+## Docker Deployment
+
+### Using Docker Compose
+
+**1. Create `.env` file (for local Docker):**
+```bash
+cp .env.example .env
+# Edit .env with your API credentials
+```
+
+**2. Build and run:**
+```bash
+docker-compose up --build
+```
+
+The application will be available at `http://localhost:8080`
+
+### Using Dokploy
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed Dokploy deployment instructions.
+
+**Required Environment Variables in Dokploy:**
+```
+API_URL=http://your-api-server/v1/chat/completions
+API_KEY=your-api-key-here
+MODEL=qwen2-vl-32b-instruct-awq
+```
+
+**Optional Environment Variables:**
+```
+MAX_FILE_SIZE_MB=16
+UPLOAD_FOLDER=uploads
+DEFAULT_DPI=200
+FLASK_DEBUG=False
+```
+
 ## Troubleshooting
 
 ### PDF Import Error

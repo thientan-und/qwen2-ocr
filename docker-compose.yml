@@ -6,13 +6,24 @@ services:
     container_name: qwen2-vl-ocr
     ports:
       - "8080:8080"
-    env_file:
-      - .env
     environment:
+      # API Configuration - REQUIRED
+      # Set these in Dokploy UI or .env file
+      - API_URL=${API_URL}
+      - API_KEY=${API_KEY}
+      - MODEL=${MODEL:-qwen2-vl-32b-instruct-awq}
+
       # Flask Configuration
       - FLASK_HOST=0.0.0.0
       - FLASK_PORT=8080
-      - FLASK_DEBUG=False
+      - FLASK_DEBUG=${FLASK_DEBUG:-False}
+
+      # File Upload Configuration
+      - MAX_FILE_SIZE_MB=${MAX_FILE_SIZE_MB:-16}
+      - UPLOAD_FOLDER=${UPLOAD_FOLDER:-uploads}
+
+      # PDF Processing
+      - DEFAULT_DPI=${DEFAULT_DPI:-200}
 
     volumes:
       - uploads:/app/uploads
