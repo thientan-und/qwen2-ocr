@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Qwen2-VL OCR Web Interface</title>
+    <title>OCR Web Interface</title>
     <style>
         * {
             margin: 0;
@@ -164,14 +164,33 @@
             transform: none;
         }
 
-        .loading {
-            display: none;
-            text-align: center;
-            margin: 20px 0;
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
         }
 
-        .loading.active {
-            display: block;
+        .btn-reset {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-reset:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+        }
+
+        .btn-reset:active {
+            transform: translateY(0);
         }
 
         .spinner {
@@ -292,8 +311,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📄 Qwen2-VL OCR Web Interface</h1>
-            <p>Upload images or PDF files for optical character recognition</p>
+            <h1>📄 OCR Web Interface</h1>
+            <p>Advanced optical character recognition with multiple AI models</p>
         </div>
 
         <div class="main-content">
@@ -333,15 +352,15 @@
                         <input type="number" id="dpiInput" value="200" min="100" max="400">
                     </div>
 
-                    <button type="submit" class="btn" id="submitBtn">
-                        Process OCR
-                    </button>
+                    <div class="btn-group">
+                        <button type="submit" class="btn" id="submitBtn">
+                            Process OCR
+                        </button>
+                        <button type="button" class="btn-reset" id="resetBtn">
+                            Reset
+                        </button>
+                    </div>
                 </form>
-
-                <div class="loading" id="loading">
-                    <div class="spinner"></div>
-                    <p>Processing... Please wait</p>
-                </div>
 
                 <div class="config-info">
                     <strong>API Configuration:</strong>
@@ -479,8 +498,7 @@
             formData.append('prompt', document.getElementById('promptInput').value);
             formData.append('dpi', document.getElementById('dpiInput').value);
 
-            // Show loading
-            document.getElementById('loading').classList.add('active');
+            // Show loading in result area
             document.getElementById('submitBtn').disabled = true;
             document.getElementById('copyBtn').style.display = 'none';
             document.getElementById('resultArea').innerHTML = '<div class="empty-state"><div class="spinner"></div><p>Processing...</p></div>';
@@ -501,7 +519,6 @@
             } catch (error) {
                 showError('Network error: ' + error.message);
             } finally {
-                document.getElementById('loading').classList.remove('active');
                 document.getElementById('submitBtn').disabled = false;
             }
         });
@@ -545,6 +562,28 @@
                     alert('Failed to copy to clipboard');
                 });
             }
+        });
+
+        // Reset button
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            // Reset file input
+            selectedFile = null;
+            fileInput.value = '';
+            fileInfo.classList.remove('active');
+
+            // Reset form fields
+            document.getElementById('promptInput').value = 'OCR this image and extract all text.';
+            document.getElementById('dpiInput').value = '200';
+
+            // Reset result area
+            document.getElementById('resultArea').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">🔍</div>
+                    <p>Upload a file to see OCR results</p>
+                </div>
+            `;
+            document.getElementById('copyBtn').style.display = 'none';
+            window.lastResult = null;
         });
     </script>
 </body>
