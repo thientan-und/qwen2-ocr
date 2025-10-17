@@ -33,8 +33,15 @@ API_URL = os.getenv('API_URL')
 API_KEY = os.getenv('API_KEY')
 MODEL = os.getenv('MODEL', 'qwen2-vl-32b-instruct-awq')
 
+# Validate environment variables (warning only at startup)
 if not API_URL or not API_KEY:
-    raise ValueError("API_URL and API_KEY must be set in .env file")
+    print("=" * 60)
+    print("⚠️  WARNING: Missing API Configuration!")
+    print("=" * 60)
+    print("API_URL and API_KEY environment variables are not set.")
+    print("The application will start but OCR functionality will not work.")
+    print("Please set these variables in your .env file or deployment platform.")
+    print("=" * 60)
 
 
 def allowed_file(filename):
@@ -48,6 +55,12 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/health')
+def health():
+    """Health check endpoint for Docker/Dokploy."""
+    return jsonify({'status': 'healthy'}), 200
+
+
 @app.route('/api/ocr', methods=['POST'])
 def ocr():
     """
@@ -55,6 +68,13 @@ def ocr():
 
     Returns JSON response with OCR results.
     """
+    # Check API configuration first
+    if not API_URL or not API_KEY:
+        return jsonify({
+            'success': False,
+            'error': 'API configuration missing. Please set API_URL and API_KEY environment variables.'
+        }), 500
+
     # Check if file was uploaded
     if 'file' not in request.files:
         return jsonify({'error': 'No file uploaded'}), 400
@@ -146,10 +166,12 @@ def ocr():
 def config():
     """Get current API configuration."""
     return jsonify({
-        'api_url': API_URL,
+        'api_url': API_URL or 'NOT_CONFIGURED',
+        'api_key_set': bool(API_KEY),
         'model': MODEL,
         'max_file_size': '16MB',
-        'allowed_extensions': list(ALLOWED_EXTENSIONS)
+        'allowed_extensions': list(ALLOWED_EXTENSIONS),
+        'status': 'ready' if (API_URL and API_KEY) else 'missing_config'
     })
 
 
