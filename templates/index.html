@@ -317,6 +317,13 @@
 
                 <form id="ocrForm">
                     <div class="form-group">
+                        <label for="modelSelect">Select Model</label>
+                        <select id="modelSelect" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1em;">
+                            <option value="">Loading models...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
                         <label for="promptInput">Custom Prompt (optional)</label>
                         <textarea id="promptInput" placeholder="OCR this image and extract all text.">OCR this image and extract all text.</textarea>
                     </div>
@@ -362,15 +369,53 @@
 
     <script>
         let selectedFile = null;
+        let availableModels = [];
 
-        // Load API config
+        // Load API config and models
         fetch('/api/config')
             .then(res => res.json())
             .then(data => {
-                document.getElementById('modelInfo').textContent = data.model;
-                document.getElementById('endpointInfo').textContent = data.api_url;
+                availableModels = data.models || [];
+                const modelSelect = document.getElementById('modelSelect');
+                modelSelect.innerHTML = '';
+
+                if (availableModels.length === 0) {
+                    modelSelect.innerHTML = '<option value="">No models configured</option>';
+                    return;
+                }
+
+                availableModels.forEach((model, index) => {
+                    const option = document.createElement('option');
+                    option.value = model.id;
+                    option.textContent = model.configured ? model.name : `${model.name} (not configured)`;
+                    option.disabled = !model.configured;
+                    if (index === 0 && model.configured) {
+                        option.selected = true;
+                    }
+                    modelSelect.appendChild(option);
+                });
+
+                // Update config info
+                updateConfigInfo();
             })
-            .catch(err => console.error('Failed to load config:', err));
+            .catch(err => {
+                console.error('Failed to load config:', err);
+                document.getElementById('modelSelect').innerHTML = '<option value="">Error loading models</option>';
+            });
+
+        // Update config info when model selection changes
+        document.getElementById('modelSelect').addEventListener('change', updateConfigInfo);
+
+        function updateConfigInfo() {
+            const modelSelect = document.getElementById('modelSelect');
+            const selectedModelId = modelSelect.value;
+            const selectedModel = availableModels.find(m => m.id === selectedModelId);
+
+            if (selectedModel) {
+                document.getElementById('modelInfo').textContent = selectedModel.name;
+                document.getElementById('endpointInfo').textContent = selectedModel.api_url;
+            }
+        }
 
         // Upload area interactions
         const uploadArea = document.getElementById('uploadArea');
@@ -430,6 +475,7 @@
 
             const formData = new FormData();
             formData.append('file', selectedFile);
+            formData.append('model_id', document.getElementById('modelSelect').value);
             formData.append('prompt', document.getElementById('promptInput').value);
             formData.append('dpi', document.getElementById('dpiInput').value);
 

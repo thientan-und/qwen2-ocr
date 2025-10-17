@@ -4,16 +4,20 @@ A powerful Python CLI application for performing OCR (Optical Character Recognit
 
 ## Features
 
+- **Multiple Model Support** - Switch between different OCR models:
+  - Qwen2-VL 32B (Local deployment)
+  - Qwen2.5-VL 7B (Hugging Face API)
+- **Web Interface** with model selection dropdown
 - Support for both local and remote images
 - **PDF file processing** with configurable DPI
 - **Multi-page document handling**
 - **Batch processing** of multiple files
-- Automatic base64 encoding for local images
+- Automatic base64 encoding and image resizing
 - Custom OCR prompts
 - JSON or text output formats
 - Page-separated output option
 - Save results to file
-- Configurable API endpoint and authentication
+- Flexible API configuration
 
 ## Installation
 
@@ -37,12 +41,23 @@ Copy the example file:
 cp .env.example .env
 ```
 
-Edit `.env` and add your API credentials:
+Edit `.env` and configure your API credentials:
+
+**For Local Qwen2-VL 32B:**
 ```env
 API_URL=http://your-api-server/v1/chat/completions
 API_KEY=your_api_key_here
 MODEL=qwen2-vl-32b-instruct-awq
 ```
+
+**For Hugging Face Qwen2.5-VL 7B:**
+```env
+HF_API_URL=https://router.huggingface.co/v1/chat/completions
+HF_API_KEY=your_huggingface_token_here
+HF_MODEL=Qwen/Qwen2.5-VL-7B-Instruct:hyperbolic
+```
+
+You can configure **one or both models**. The web interface will show all configured models.
 
 **Never commit your `.env` file to Git!** It contains sensitive API keys.
 
@@ -74,6 +89,24 @@ chmod +x ocr_app.py
 ```
 
 ## Usage
+
+### Web Interface
+
+Start the web application:
+```bash
+python3 app.py
+```
+
+Then open your browser to `http://localhost:8081` (or the configured port).
+
+**Features:**
+1. **Model Selection** - Choose between configured models via dropdown
+2. **Drag & Drop** - Upload files by dragging them to the upload area
+3. **Custom Prompts** - Optionally customize the OCR prompt
+4. **DPI Configuration** - Adjust PDF rendering quality
+5. **JSON Output** - View and copy structured JSON results
+
+### CLI Usage
 
 ### Basic Usage
 
