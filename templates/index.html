@@ -208,6 +208,34 @@
             100% { transform: rotate(360deg); }
         }
 
+        .result-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 0.95em;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            color: #667eea;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: 600;
+        }
+
         .result-area {
             background: #f8f9fa;
             border-radius: 8px;
@@ -220,9 +248,69 @@
         .result-area pre {
             white-space: pre-wrap;
             word-wrap: break-word;
-            font-family: 'Courier New', monospace;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             font-size: 0.9em;
-            line-height: 1.5;
+            line-height: 1.6;
+            background: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .text-output {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+            font-size: 1em;
+            line-height: 1.8;
+            color: #333;
+            white-space: pre-wrap;
+        }
+
+        .json-key {
+            color: #881391;
+            font-weight: 600;
+        }
+
+        .json-string {
+            color: #1A1AA6;
+        }
+
+        .json-number {
+            color: #164BC5;
+        }
+
+        .json-boolean {
+            color: #0070C0;
+        }
+
+        .json-null {
+            color: #808080;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .page-separator {
+            border-top: 2px dashed #ddd;
+            margin: 20px 0;
+            padding-top: 15px;
+        }
+
+        .page-header {
+            background: #667eea;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: inline-block;
         }
 
         .empty-state {
@@ -374,8 +462,14 @@
             <!-- Results Section -->
             <div class="card">
                 <div class="result-header">
-                    <h2>Results (JSON)</h2>
-                    <button class="copy-btn" id="copyBtn" style="display: none;">Copy JSON</button>
+                    <h2>Results</h2>
+                    <button class="copy-btn" id="copyBtn" style="display: none;">Copy</button>
+                </div>
+
+                <div class="result-tabs" id="resultTabs" style="display: none;">
+                    <button class="tab-btn active" data-tab="text">📝 Text</button>
+                    <button class="tab-btn" data-tab="formatted">🎨 Formatted</button>
+                    <button class="tab-btn" data-tab="json">📋 JSON</button>
                 </div>
 
                 <div class="result-area" id="resultArea">
@@ -525,20 +619,127 @@
             }
         });
 
-        function displayResult(data) {
-            const resultArea = document.getElementById('resultArea');
-            const jsonStr = JSON.stringify(data, null, 2);
+        let currentTab = 'text';
+        let resultData = null;
 
-            resultArea.innerHTML = `<pre>${escapeHtml(jsonStr)}</pre>`;
+        function displayResult(data) {
+            resultData = data;
+            currentTab = 'text';
+
+            // Show tabs
+            document.getElementById('resultTabs').style.display = 'flex';
             document.getElementById('copyBtn').style.display = 'block';
 
-            // Store for copy function
+            // Update active tab
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.tab === 'text') {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Render text view by default
+            renderTextView(data);
+        }
+
+        function renderTextView(data) {
+            const resultArea = document.getElementById('resultArea');
+            let textOutput = '';
+
+            if (data.results && Array.isArray(data.results)) {
+                data.results.forEach((result, index) => {
+                    if (data.results.length > 1) {
+                        textOutput += `<div class="page-header">Page ${result.page || index + 1}</div>`;
+                    }
+
+                    const content = extractTextContent(result.response);
+                    textOutput += `<div class="text-output">${escapeHtml(content)}</div>`;
+
+                    if (index < data.results.length - 1) {
+                        textOutput += '<div class="page-separator"></div>';
+                    }
+                });
+            }
+
+            resultArea.innerHTML = textOutput;
+            window.lastResult = data.results.map(r => extractTextContent(r.response)).join('\n\n---\n\n');
+        }
+
+        function renderFormattedView(data) {
+            const resultArea = document.getElementById('resultArea');
+            const formatted = syntaxHighlight(JSON.stringify(data, null, 2));
+            resultArea.innerHTML = `<pre>${formatted}</pre>`;
+            window.lastResult = JSON.stringify(data, null, 2);
+        }
+
+        function renderJSONView(data) {
+            const resultArea = document.getElementById('resultArea');
+            const jsonStr = JSON.stringify(data, null, 2);
+            resultArea.innerHTML = `<pre>${escapeHtml(jsonStr)}</pre>`;
             window.lastResult = jsonStr;
         }
+
+        function extractTextContent(response) {
+            if (response.error) {
+                return `Error: ${response.error}`;
+            }
+
+            if (response.choices && response.choices[0] && response.choices[0].message) {
+                return response.choices[0].message.content || 'No content';
+            }
+
+            return 'No text extracted';
+        }
+
+        function syntaxHighlight(json) {
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                let cls = 'json-number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'json-key';
+                    } else {
+                        cls = 'json-string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'json-boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'json-null';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+
+        // Tab switching
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('tab-btn')) {
+                const tab = e.target.dataset.tab;
+                currentTab = tab;
+
+                // Update active tab
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                e.target.classList.add('active');
+
+                // Render appropriate view
+                if (resultData) {
+                    if (tab === 'text') {
+                        renderTextView(resultData);
+                    } else if (tab === 'formatted') {
+                        renderFormattedView(resultData);
+                    } else if (tab === 'json') {
+                        renderJSONView(resultData);
+                    }
+                }
+            }
+        });
 
         function showError(message) {
             const resultArea = document.getElementById('resultArea');
             resultArea.innerHTML = `<div class="error"><strong>Error:</strong> ${escapeHtml(message)}</div>`;
+            document.getElementById('resultTabs').style.display = 'none';
+            document.getElementById('copyBtn').style.display = 'none';
         }
 
         function escapeHtml(text) {
@@ -585,7 +786,9 @@
                 </div>
             `;
             document.getElementById('copyBtn').style.display = 'none';
+            document.getElementById('resultTabs').style.display = 'none';
             window.lastResult = null;
+            resultData = null;
         });
     </script>
 </body>
