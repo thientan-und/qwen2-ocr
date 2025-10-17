@@ -17,12 +17,36 @@ A powerful Python CLI application for performing OCR (Optical Character Recognit
 
 ## Installation
 
-### 1. Install dependencies:
+### 1. Clone the repository:
+```bash
+git clone https://github.com/thientan-und/qwen2-ocr.git
+cd qwen2-ocr
+```
+
+### 2. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. PDF Support (choose one):
+### 3. Configure environment variables:
+
+**⚠️ IMPORTANT: You must create a `.env` file before running the application!**
+
+Copy the example file:
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and add your API credentials:
+```env
+API_URL=http://your-api-server/v1/chat/completions
+API_KEY=your_api_key_here
+MODEL=qwen2-vl-32b-instruct-awq
+```
+
+**Never commit your `.env` file to Git!** It contains sensitive API keys.
+
+### 4. PDF Support (choose one):
 
 **Option A - pypdfium2 (recommended, no external dependencies):**
 ```bash
@@ -44,7 +68,7 @@ For pdf2image on Ubuntu/Debian:
 sudo apt-get install poppler-utils
 ```
 
-### 3. Make the script executable (optional):
+### 5. Make the script executable (optional):
 ```bash
 chmod +x ocr_app.py
 ```

@@ -340,8 +340,8 @@ Examples:
     )
 
     # Get default values from environment variables
-    default_api_url = os.getenv('API_URL', 'http://172.20.22.71/v1/chat/completions')
-    default_api_key = os.getenv('API_KEY', 'BGpR2654R2LqKIwQsc0Nb8rg0QA8prbldocZ')
+    default_api_url = os.getenv('API_URL', '')
+    default_api_key = os.getenv('API_KEY', '')
     default_model = os.getenv('MODEL', 'qwen2-vl-32b-instruct-awq')
     default_dpi = int(os.getenv('DEFAULT_DPI', '200'))
 

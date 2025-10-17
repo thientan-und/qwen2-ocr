@@ -6,23 +6,13 @@ services:
     container_name: qwen2-vl-ocr
     ports:
       - "8080:8080"
+    env_file:
+      - .env
     environment:
-      # API Configuration
-      - API_URL=http://172.20.22.71/v1/chat/completions
-      - API_KEY=BGpR2654R2LqKIwQsc0Nb8rg0QA8prbldocZ
-      - MODEL=qwen2-vl-32b-instruct-awq
-
       # Flask Configuration
       - FLASK_HOST=0.0.0.0
       - FLASK_PORT=8080
       - FLASK_DEBUG=False
-
-      # File Upload Configuration
-      - MAX_FILE_SIZE_MB=16
-      - UPLOAD_FOLDER=uploads
-
-      # PDF Processing
-      - DEFAULT_DPI=200
 
     volumes:
       - uploads:/app/uploads

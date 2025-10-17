@@ -29,9 +29,12 @@ Path(app.config['UPLOAD_FOLDER']).mkdir(exist_ok=True)
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'pdf'}
 
 # OCR App configuration from environment variables
-API_URL = os.getenv('API_URL', 'http://172.20.22.71/v1/chat/completions')
-API_KEY = os.getenv('API_KEY', 'BGpR2654R2LqKIwQsc0Nb8rg0QA8prbldocZ')
+API_URL = os.getenv('API_URL')
+API_KEY = os.getenv('API_KEY')
 MODEL = os.getenv('MODEL', 'qwen2-vl-32b-instruct-awq')
+
+if not API_URL or not API_KEY:
+    raise ValueError("API_URL and API_KEY must be set in .env file")
 
 
 def allowed_file(filename):
